@@ -1,0 +1,46 @@
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+       
+        Map<Integer, List<int[]>> adjList = new HashMap();
+
+        for (int[] flight : flights) {
+            int fromCity = flight[0];
+            int toCity = flight[1];
+            int price = flight[2];
+            adjList.putIfAbsent(fromCity, new ArrayList());
+            adjList.get(fromCity).add(new int[] {toCity, price});
+        }
+
+
+        PriorityQueue<int[]> minHeap = new PriorityQueue<int[]>(new Comparator<int[]>() {
+           @Override
+            public int compare(int[] a, int[] b) {
+                return a[2] - b[2];
+            }
+        });
+        minHeap.add(new int[] {src, 0, 0});
+
+        while (!minHeap.isEmpty()) {
+            int[] curInfo = minHeap.remove();
+            int curStop = curInfo[0];
+        
+             int stops = curInfo[1];
+            int curCost = curInfo[2];
+
+            if (curStop == dst) {
+                return curCost;
+            }
+
+            if (stops <= K && adjList.containsKey(curStop)) {
+                for (int[] nextInfo : adjList.get(curStop)) {
+                    int nextStop = nextInfo[0];
+                    int price = nextInfo[1];
+                    minHeap.add(new int[] {nextStop, stops + 1, curCost + price});
+                }
+            }
+
+        }
+        return -1;
+            
+    }
+}
